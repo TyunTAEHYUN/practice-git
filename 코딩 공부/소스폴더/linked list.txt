@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_NAME_LEN 20
+struct Student {
+	char name[MAX_NAME_LEN];
+	int num; //학번
+	int score;
+	struct Student* next;  //자기와 같은 구조체의 주소를 지칭할 수 있는 포인터
+};
+
+typedef struct Student st;
+void insert();
+void print_out();
+
+st* head;  // list의 헤더
+st* temp;  // 데이터의 임시 보관
+
+int main(void) {
+	int num;
+	char name[MAX_NAME_LEN];
+	int  score;
+
+	head = NULL;
+
+		//학생 정보 입력 
+	printf("학생 정보를 입력하세요\n입력을 마치려면 학번에 -1을 넣으세요.\n\n");
+	while (1) {
+		printf("학번: ");
+		scanf("%d", &num);
+		if (num == -1) break;
+		printf("이름: ");
+		scanf("%s", name);
+		printf("성적: ");
+		scanf("%d", &score);
+		printf("\n");
+		temp = (st*)malloc(sizeof(st*));  //새로운 데이터 공간할당
+		temp->num = num;
+		strcpy(temp->name, name);
+		temp->score = score;
+		temp->next = NULL;
+
+		insert();
+	} 
+	print_out();
+		return 0;
+}
+void insert() {
+	st* search, * previous;
+	if(head==NULL) head = temp; //리스트가 비어있을 때
+	else {
+		search = head; //search에 헤더 주소 입력
+		previous = NULL; 
+		while (search != NULL&& search->score > temp->score) { // search 가 NULL이 되거나 temp의 score가 search의 score보다 크면 끝남
+			previous = search;  // previous에 search 주소 지정
+			search = search->next; //search에 search의 next 주소 지정
+		}
+		if (previous == NULL) { //첫번째 순서로 삽입해야할 때
+			temp->next = search;  //원래 헤더의 주소를 temp의 next가 가리킴
+			head = temp; //list의 헤더를 temp 값으로 지정
+		}
+		else { //첫번째가 아닌 순서로 삽입해야할 때
+			temp->next = search;  //search에 들어있는 리스트를 temp의 next가 가리킴
+			previous->next = temp; //원래 search를 가리키던 previous의 next가 temp를 가리키도록함
+		}
+	}
+}
+
+//출력
+void print_out() {
+	st* search=head;
+	printf("학번 이름 성적\n");
+	printf("======================================\n");
+	
+	 
+	while (search != NULL) {
+		printf("%d %s %d\n", search->num, search->name, search->score);
+		search = search->next;
+	} //search 즉 next 값이 NULL이 될 때까지 출력
+}
